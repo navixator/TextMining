@@ -1,0 +1,38 @@
+#Load dataset with one column containing open-end comments
+data <- read.csv("yourfile.csv", header = TRUE, stringsAsFactors = FALSE)
+
+#Load requisite packages. Install if not available
+library(tm)
+library(pander)
+library(topicmodels)
+library(ldatuning)
+
+#Create a corpus
+corpus <- Corpus(VectorSource(data))
+corpus<-tm_map(corpus,content_transformer(tolower))
+corpus<-tm_map(corpus,removePunctuation)
+corpus<-tm_map(corpus,stripWhitespace)
+corpus<-tm_map(corpus,removeWords,stopwords("english"))
+
+#You can choose to remove words as applicable to your dataset
+corpus<-tm_map(corpus,removeWords,c("and","what","where","how","when","in","the","or","for","at", "dont", "with", "from", "into", "until"))
+
+#Create a document term matrix. This creates a DTM of dimensions m x n, where m = number of open-ended comments also referred to as documents and n = number of unique words
+mydtm <- DocumentTermMatrix(corpus)
+
+#Set number of terms needed in a topic
+k <- 5
+
+#Set number of topics needed
+n <- 5
+
+#Generate model using LDA
+ldamodel1 <- LDA(mydtm1, n, method = "Gibbs", control = list(iter = 500, seed= 22))
+
+#Generate topics and terms
+ldaout.terms <- as.matrix(terms(ldamodel1, k))
+ldaout.topics <- as.data.frame(topics(ldamodel1))
+ldaout.terms
+head(ldaout.topics)
+
+#Chaos ~ Navixator
